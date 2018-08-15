@@ -49,8 +49,8 @@ import java.util.List;
 /**
  * The {@link NodeController} is entrance of node module,
  * mapped to freemarker in directory templates/cluster.
- *
- *
+ * <p>
+ * <p>
  * Created by zhangpeng on 16-11-04.
  */
 

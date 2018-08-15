@@ -25,6 +25,7 @@ import com.xiaomi.shepher.common.ReviewStatus;
 import com.xiaomi.shepher.common.Role;
 import com.xiaomi.shepher.dao.NodeDAO;
 import com.xiaomi.shepher.exception.ShepherException;
+import com.xiaomi.shepher.model.ZKNode;
 import com.xiaomi.shepher.util.ReviewUtil;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -70,6 +71,9 @@ public class NodeService {
         List<String> children = nodeDAO.getChildren(cluster, path);
         Collections.sort(children);
         return children;
+    }
+    public ZKNode getZKNode(String cluster, String path) throws ShepherException {
+        return nodeDAO.getZKNode(cluster, path);
     }
 
     public String getData(String cluster, String path) throws ShepherException {

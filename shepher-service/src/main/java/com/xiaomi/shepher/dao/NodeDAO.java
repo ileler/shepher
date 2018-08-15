@@ -17,6 +17,7 @@
 package com.xiaomi.shepher.dao;
 
 import com.xiaomi.shepher.exception.ShepherException;
+import com.xiaomi.shepher.model.ZKNode;
 import com.xiaomi.shepher.util.ZkPool;
 import org.I0Itec.zkclient.ZkClient;
 import org.I0Itec.zkclient.exception.ZkBadVersionException;
@@ -49,6 +50,34 @@ public class NodeDAO {
             return zkClient.getChildren(path);
         } catch (Exception e) {
             LOGGER.warn("Fail to get children, Exception:", e);
+            throw ShepherException.createUnknownException();
+        } finally {
+            ZkPool.releaseZkClient(cluster, zkClient);
+        }
+    }
+
+    public ZKNode getZKNode(String cluster, String path) throws ShepherException {
+        ZkClient zkClient = ZkPool.getZkClient(cluster);
+        try {
+            if (zkClient == null) {
+                return null;
+            }
+            ZKNode zkNode = new ZKNode(path, zkClient.readData(path));
+            List<String> children = zkClient.getChildren(path);
+            if (children != null) {
+                for (String child : children) {
+                    String childPath = path + ("/".equals(path) ? "" : "/") + child;
+                    ZKNode childNode = new ZKNode(childPath, zkClient.readData(childPath));
+                    if (zkClient.countChildren(childPath) > 0) {
+                        zkNode.addBranch(childNode);
+                    } else {
+                        zkNode.addLeaf(childNode);
+                    }
+                }
+            }
+            return zkNode;
+        } catch (Exception e) {
+            LOGGER.warn("Fail to get getZKNode, Exception:", e);
             throw ShepherException.createUnknownException();
         } finally {
             ZkPool.releaseZkClient(cluster, zkClient);
@@ -234,7 +263,7 @@ public class NodeDAO {
             if (zkClient == null) {
                 return;
             }
-            zkClient.delete(path);
+            zkClient.deleteRecursive(path);
         } catch (ZkNoNodeException e) {
             LOGGER.warn("Fail to delete node, Exception:", e);
             throw ShepherException.createNoNodeException();

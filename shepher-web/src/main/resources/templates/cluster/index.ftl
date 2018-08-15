@@ -22,7 +22,7 @@
         <form id="form-index" action="?" method="?">
             <div class="row placeholder">
                 <button class="btn btn-success rowbtn" id="delete-button"
-                        onclick="showDeleteModal(); return false;" <#if !hasDeletePermission || hasChild!>disabled</#if>>Delete
+                        onclick="showDeleteModal(); return false;" <#if !hasDeletePermission>disabled</#if>>Delete
                 </button>
                 <button class="btn btn-success rowbtn" id="create-button" onclick="onCreate('${path?url}'); return false;">Create
                 </button>
